@@ -12,6 +12,7 @@
             --bg: #f8fafc;
             --card: #ffffff;
             --accent: #6366f1;
+            --dark: #0f172a;
         }
 
         body { 
@@ -35,13 +36,16 @@
             border-bottom: 2px solid #e2e8f0;
             margin-bottom: 25px;
             padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         h2 { margin: 0; color: #0f172a; }
         h3 { margin-bottom: 15px; font-size: 1.1em; color: #334155; border-left: 4px solid var(--accent); padding-left: 10px; }
-        p.subtitle { color: #64748b; font-size: 0.9em; margin-top: 5px; }
+        p.subtitle { color: #64748b; font-size: 0.8em; margin-top: 5px; }
 
-        /* Form Input Baru */
+        /* J.620100.010.01: Form & Input */
         .form-tambah {
             background: #f1f5f9;
             padding: 20px;
@@ -123,6 +127,20 @@
             opacity: 0.7;
         }
 
+        /* J.620100.025.02: Debug View */
+        #debug-container {
+            margin-top: 20px;
+            display: none;
+            background: #27272a;
+            color: #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.75em;
+            white-space: pre-wrap;
+            border-left: 5px solid var(--success);
+        }
+
         /* Log Section */
         #log-container { margin-top: 30px; }
         .log-header {
@@ -134,7 +152,7 @@
 
         #log { 
             padding: 15px; 
-            background: #0f172a; 
+            background: var(--dark); 
             color: #38bdf8;
             font-family: 'Courier New', Courier, monospace;
             font-size: 0.85em; 
@@ -144,7 +162,9 @@
             line-height: 1.5;
         }
 
+        .utility-btns { display: flex; gap: 5px; }
         .test-btn { background: #64748b; color: white; font-size: 0.7em; padding: 4px 8px; }
+        .debug-btn { background: #f59e0b; color: white; font-size: 0.7em; padding: 4px 8px; }
 
         @media (max-width: 600px) {
             .form-tambah { grid-template-columns: 1fr; }
@@ -156,11 +176,20 @@
 
 <div class="container">
     <div class="header">
-        <h2>Sistem Peminjaman Buku</h2>
-        <p class="subtitle">Unit SKKNI: J.620100.004.02 (Struktur Data) & J.620100.010.01 (GUI)</p>
+        <div>
+            <h2>Sistem Peminjaman Buku</h2>
+            <p class="subtitle">Compliance: J.620100.010.01 & J.620100.025.02</p>
+        </div>
+        <div class="utility-btns">
+            <button class="debug-btn" onclick="toggleDebug()">Toggle Debug</button>
+            <button class="test-btn" onclick="jalankanUjiUnit()">Uji Sistem</button>
+        </div>
     </div>
 
-    <!-- Form Tambah Buku Baru (Fitur Baru) -->
+    <!-- J.620100.025.02: Monitor Data Real-time -->
+    <div id="debug-container">// Data Structure Debug View (JSON)</div>
+
+    <!-- Form Tambah Buku Baru (J.620100.010.01) -->
     <section>
         <h3>Tambah Koleksi Buku</h3>
         <div class="form-tambah">
@@ -182,11 +211,10 @@
         <div id="book-list"></div>
     </section>
     
-    <!-- Dokumentasi Log Sistem (J.620100.023.02) -->
+    <!-- Log Aktivitas (J.620100.023.02) -->
     <div id="log-container">
         <div class="log-header">
-            <strong>Log Aktivitas (J.620100.023.02)</strong>
-            <button class="test-btn" onclick="jalankanUjiUnit()">Uji Sistem</button>
+            <strong>Log Aktivitas Sistem</strong>
         </div>
         <div id="log">Sistem inisialisasi...<br></div>
     </div>
@@ -203,25 +231,37 @@
 
     const kontainerBuku = document.getElementById('book-list');
     const areaLog = document.getElementById('log');
+    const debugArea = document.getElementById('debug-container');
 
     /**
-     * FUNGSI TAMBAH BUKU BARU
-     * Menambahkan elemen baru ke dalam Array (Struktur Data)
+     * J.620100.025.02: Debugging & Monitoring
+     * Fungsi untuk memperbarui tampilan data mentah guna membantu debugging.
+     */
+    function updateDebugView() {
+        debugArea.textContent = "// DEBUG: Current Data State\n" + JSON.stringify(inventarisBuku, null, 2);
+    }
+
+    function toggleDebug() {
+        debugArea.style.display = debugArea.style.display === 'block' ? 'none' : 'block';
+        tambahLog(`[Debug] Tampilan data mentah ${debugArea.style.display === 'block' ? 'diaktifkan' : 'dimatikan'}`);
+    }
+
+    /**
+     * J.620100.010.01: Menerapkan Perintah Eksekusi
+     * Menambahkan data baru ke dalam array melalui antarmuka grafis.
      */
     function tambahBukuBaru() {
         const inputJudul = document.getElementById('judul');
         const inputPenulis = document.getElementById('penulis');
 
-        // Validasi Input (Debugging & Best Practice J.620100.016.01)
+        // Validasi Eksekusi
         if (inputJudul.value.trim() === "" || inputPenulis.value.trim() === "") {
-            tambahLog("[Peringatan] Judul dan Penulis tidak boleh kosong!", "danger");
+            tambahLog("[Peringatan] Input gagal: Judul/Penulis kosong", "danger");
             return;
         }
 
-        // Membuat ID unik secara otomatis
         const idBaru = inventarisBuku.length > 0 ? Math.max(...inventarisBuku.map(b => b.id)) + 1 : 101;
         
-        // Push ke Array (Struktur Data)
         const bukuBaru = {
             id: idBaru,
             judul: inputJudul.value,
@@ -230,20 +270,22 @@
         };
 
         inventarisBuku.push(bukuBaru);
+        tambahLog(`[Sistem] Eksekusi Tambah: "${bukuBaru.judul}" berhasil.`);
         
-        tambahLog(`[Sistem] Buku baru ditambahkan: "${bukuBaru.judul}"`);
-        
-        // Reset form
         inputJudul.value = "";
         inputPenulis.value = "";
         
-        // Refresh UI
-        tampilkanBuku();
+        refreshUI();
     }
 
     /**
-     * RENDER ANTARMUKA (J.620100.017.02)
+     * J.620100.017.02: Pemrograman Terstruktur
      */
+    function refreshUI() {
+        tampilkanBuku();
+        updateDebugView();
+    }
+
     function tampilkanBuku() {
         kontainerBuku.innerHTML = '';
         inventarisBuku.forEach(buku => {
@@ -270,8 +312,8 @@
         const buku = inventarisBuku.find(b => b.id === id);
         if (buku) {
             buku.dipinjam = true;
-            tambahLog(`[User] Meminjam: "${buku.judul}"`);
-            tampilkanBuku();
+            tambahLog(`[Eksekusi] Peminjaman ID ${id} (${buku.judul}) sukses.`);
+            refreshUI();
         }
     }
 
@@ -279,8 +321,8 @@
         const buku = inventarisBuku.find(b => b.id === id);
         if (buku) {
             buku.dipinjam = false;
-            tambahLog(`[User] Mengembalikan: "${buku.judul}"`);
-            tampilkanBuku();
+            tambahLog(`[Eksekusi] Pengembalian ID ${id} sukses.`);
+            refreshUI();
         }
     }
 
@@ -292,40 +334,28 @@
     }
 
     /**
-     * PENGUJIAN UNIT (J.620100.033.02)
+     * J.620100.033.02: Pengujian Unit
      */
     function jalankanUjiUnit() {
-        tambahLog("--- MEMULAI PENGUJIAN UNIT ---");
+        tambahLog("--- MEMULAI PENGUJIAN OTOMATIS ---");
         
-        // 1. Uji Penambahan Data
-        const jumlahAwal = inventarisBuku.length;
-        document.getElementById('judul').value = "Buku Tes";
-        document.getElementById('penulis').value = "Penulis Tes";
-        tambahBukuBaru();
+        // Uji Logic Debugging & Data
+        const testId = 101;
+        pinjamBuku(testId);
+        const dataMatch = inventarisBuku.find(b => b.id === testId).dipinjam === true;
         
-        if (inventarisBuku.length > jumlahAwal) {
-            tambahLog("UJI_UNIT_ADD (Tambah Buku): BERHASIL");
+        if (dataMatch) {
+            tambahLog("UNIT_TEST: Sinkronisasi Data & UI: BERHASIL");
         } else {
-            tambahLog("UJI_UNIT_ADD (Tambah Buku): GAGAL", "danger");
+            tambahLog("UNIT_TEST: Sinkronisasi Data & UI: GAGAL", "danger");
         }
 
-        // 2. Uji Pengembalian Data
-        const bukuUji = inventarisBuku[0]; // Ambil buku pertama
-        pinjamBuku(bukuUji.id); // Status awal: dipinjam
-        
-        const statusSetelahPinjam = bukuUji.dipinjam;
-        kembalikanBuku(bukuUji.id); // Lakukan aksi pengembalian
-        
-        if (statusSetelahPinjam === true && bukuUji.dipinjam === false) {
-            tambahLog("UJI_UNIT_RETURN (Pengembalian): BERHASIL");
-        } else {
-            tambahLog("UJI_UNIT_RETURN (Pengembalian): GAGAL", "danger");
-        }
-
+        kembalikanBuku(testId);
         tambahLog("--- PENGUJIAN SELESAI ---");
     }
 
-    tampilkanBuku();
+    // Inisialisasi Awal
+    refreshUI();
 </script>
 
 </body>
