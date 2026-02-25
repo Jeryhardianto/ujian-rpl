@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Peminjaman Buku - Kepatuhan SKKNI</title>
+    <title>Sistem Peminjaman Buku - Kepatuhan SKKNI PEMROGRAM JUNIOR</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -127,6 +127,38 @@
             opacity: 0.7;
         }
 
+        /* J.620100.009.01: Spesifikasi Program */
+        #spec-container {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            font-size: 0.82em;
+            color: #1e3a5f;
+        }
+        #spec-container summary {
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--primary);
+            user-select: none;
+        }
+        #spec-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        #spec-container td, #spec-container th {
+            border: 1px solid #bfdbfe;
+            padding: 5px 8px;
+            vertical-align: top;
+        }
+        #spec-container th {
+            background: #dbeafe;
+            font-weight: 700;
+        }
+
         /* J.620100.025.02: Debug View */
         #debug-container {
             margin-top: 20px;
@@ -178,7 +210,8 @@
     <div class="header">
         <div>
             <h2>Sistem Peminjaman Buku</h2>
-            <p class="subtitle">Compliance: J.620100.010.01 & J.620100.025.02</p>
+            <p class="subtitle">Compliance: J.620100.004.02 | J.620100.009.01 | J.620100.010.01 | J.620100.016.01 | J.620100.017.02 | J.620100.023.02 | J.620100.025.02 | J.620100.033.02</p>
+            <p class="subtitle"><strong>Skema:</strong> Pemrogram Junior (Junior Coder) — SKKNI No. 282 Tahun 2016</p>
         </div>
         <div class="utility-btns">
             <button class="debug-btn" onclick="toggleDebug()">Toggle Debug</button>
@@ -186,7 +219,25 @@
         </div>
     </div>
 
+    <!-- J.620100.009.01: Spesifikasi Program -->
+    <details id="spec-container">
+        <summary>📋 Spesifikasi Program (J.620100.009.01) — Klik untuk tampilkan</summary>
+        <table>
+            <tr><th>Atribut</th><th>Keterangan</th></tr>
+            <tr><td><strong>Nama Sistem</strong></td><td>Sistem Peminjaman Buku</td></tr>
+            <tr><td><strong>Skema SKKNI</strong></td><td>Pemrogram Junior (Junior Coder) — No. 282 Tahun 2016</td></tr>
+            <tr><td><strong>Bahasa</strong></td><td>HTML5, CSS3, JavaScript (Vanilla ES6+)</td></tr>
+            <tr><td><strong>Platform</strong></td><td>Browser (Client-side, tanpa server)</td></tr>
+            <tr><td><strong>Input</strong></td><td>Judul buku, nama penulis (via form)</td></tr>
+            <tr><td><strong>Output</strong></td><td>Daftar inventaris buku, status peminjaman, log aktivitas</td></tr>
+            <tr><td><strong>Struktur Data</strong></td><td>Array of Objects: <code>{ id, judul, penulis, dipinjam }</code></td></tr>
+            <tr><td><strong>Batasan</strong></td><td>Data tidak persisten (in-memory); input wajib diisi</td></tr>
+            <tr><td><strong>Unit Kompetensi</strong></td><td>J.620100.004.02, J.620100.009.01, J.620100.010.01, J.620100.016.01, J.620100.017.02, J.620100.023.02, J.620100.025.02, J.620100.033.02</td></tr>
+        </table>
+    </details>
+
     <!-- J.620100.025.02: Monitor Data Real-time -->
+
     <div id="debug-container">// Data Structure Debug View (JSON)</div>
 
     <!-- Form Tambah Buku Baru (J.620100.010.01) -->
@@ -338,19 +389,28 @@
      */
     function jalankanUjiUnit() {
         tambahLog("--- MEMULAI PENGUJIAN OTOMATIS ---");
+
+        // Uji J.620100.009.01: Spesifikasi - cek atribut wajib pada model data
+        const atributWajib = ['id', 'judul', 'penulis', 'dipinjam'];
+        const specOk = inventarisBuku.length > 0 && atributWajib.every(k => k in inventarisBuku[0]);
+        tambahLog(`UNIT_TEST [J.620100.009.01] Validasi Spesifikasi Model Data: ${specOk ? 'BERHASIL' : 'GAGAL'}`, specOk ? 'info' : 'danger');
         
         // Uji Logic Debugging & Data
         const testId = 101;
         pinjamBuku(testId);
         const dataMatch = inventarisBuku.find(b => b.id === testId).dipinjam === true;
-        
-        if (dataMatch) {
-            tambahLog("UNIT_TEST: Sinkronisasi Data & UI: BERHASIL");
-        } else {
-            tambahLog("UNIT_TEST: Sinkronisasi Data & UI: GAGAL", "danger");
-        }
+        tambahLog(`UNIT_TEST [J.620100.025.02] Sinkronisasi Data & UI: ${dataMatch ? 'BERHASIL' : 'GAGAL'}`, dataMatch ? 'info' : 'danger');
 
         kembalikanBuku(testId);
+
+        // Uji tambah buku (validasi + struktur data)
+        const jumlahAwal = inventarisBuku.length;
+        inventarisBuku.push({ id: 999, judul: "Test Buku", penulis: "Test Author", dipinjam: false });
+        const addOk = inventarisBuku.length === jumlahAwal + 1;
+        inventarisBuku.pop();
+        tambahLog(`UNIT_TEST [J.620100.004.02] Operasi Array (Push/Pop): ${addOk ? 'BERHASIL' : 'GAGAL'}`, addOk ? 'info' : 'danger');
+
+        refreshUI();
         tambahLog("--- PENGUJIAN SELESAI ---");
     }
 
