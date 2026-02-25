@@ -1,72 +1,105 @@
 # Sistem Peminjaman Buku (Contoh UI)
 
-Ringkasan
-- Halaman HTML sederhana untuk mendemonstrasikan fitur inventaris dan peminjaman buku.
-- Ditulis sebagai contoh praktikum kepatuhan SKKNI (Unit J.620100.xxxx).
-- Tidak memerlukan server — buka file HTML di peramban.
+## Ringkasan
 
-Fitur
+Halaman HTML sederhana untuk mendemonstrasikan fitur inventaris dan peminjaman buku.  
+Ditulis sebagai contoh praktikum kepatuhan **SKKNI No. 282 Tahun 2016** — Skema **Pemrogram Junior (Junior Coder)**.  
+Tidak memerlukan server — cukup buka file HTML di peramban.
+
+---
+
+## Fitur
+
 - Tambah koleksi buku baru (judul + penulis).
-- Daftar buku dengan status: Tersedia / Dipinjam.
-- Tombol Pinjam dan Kembali untuk mengubah status buku.
-- Log aktivitas sederhana dengan tampilan konsol di halaman.
-- Tombol "Uji Sistem" menjalankan dua pengujian unit dasar (penambahan dan pengembalian).
+- Daftar buku dengan status: **Tersedia** / **Dipinjam**.
+- Tombol **Pinjam** dan **Kembali** untuk mengubah status buku.
+- Panel **Spesifikasi Program** (collapsible) — memenuhi J.620100.009.01.
+- **Log aktivitas** sederhana dengan tampilan konsol di halaman.
+- **Debug view** untuk memantau struktur data JSON secara real-time.
+- Tombol **"Uji Sistem"** menjalankan pengujian unit otomatis (3 skenario).
 
-Struktur file
-- README.md — dokumentasi ini.
-- untitled:Untitled-2 (HTML) — berisi UI, style, dan skrip JavaScript tersemat.
+---
 
-Model data
-- inventarisBuku: Array objek buku.
-  - id: number (unik)
-  - judul: string
-  - penulis: string
-  - dipinjam: boolean
+## Struktur File
 
-Fungsi utama (di dalam HTML)
-- tambahBukuBaru(): validasi input → tambahkan buku → refresh UI → catat log.
-- tampilkanBuku(): render daftar buku ke DOM.
-- pinjamBuku(id): set dipinjam = true, catat log, refresh.
-- kembalikanBuku(id): set dipinjam = false, catat log, refresh.
-- tambahLog(pesan, tipe): tambahkan entri ke panel log.
-- jalankanUjiUnit(): menjalankan dua tes sederhana dan menulis hasil ke log.
+```
+README.md       — dokumentasi ini
+index.html      — UI, style CSS, dan skrip JavaScript tersemat
+```
 
-Cara menjalankan
-1. Simpan file HTML ke disk (mis. `index.html`).
-2. Buka file tersebut di browser (double-click atau drag ke browser).
-3. Gunakan form "Tambah Koleksi Buku" untuk menambah data.
-4. Klik "Uji Sistem" untuk menjalankan pengujian unit contoh.
+---
 
-Penyesuaian cepat
-- Mengganti data awal: edit variabel `inventarisBuku`.
-- Menyimpan data persistensi: integrasikan LocalStorage atau API backend.
-- Menambahkan validasi/kolom baru: tambah elemen input dan perluas objek buku.
+## Model Data
 
-Catatan pengembangan
-- Kode ditulis untuk kejelasan pembelajaran, bukan produksi.
-- Untuk produksi: pisahkan CSS/JS, tambahkan build step, dan sanitasi input.
+`inventarisBuku` — Array of Objects:
 
-## Unit Kompetensi (SKKNI)
+| Field      | Tipe    | Keterangan                  |
+|------------|---------|-----------------------------|
+| `id`       | number  | Identifikasi unik buku      |
+| `judul`    | string  | Judul buku                  |
+| `penulis`  | string  | Nama penulis                |
+| `dipinjam` | boolean | Status peminjaman buku      |
 
-Daftar unit kompetensi yang dicakup oleh contoh aplikasi dan bukti implementasi singkat:
+---
 
-- J.620100.004.02 - Struktur Data  
-  Implementasi: array `inventarisBuku` dan operasi tambah/cari/ubah status pada skrip.
+## Fungsi Utama
 
-- J.620100.010.01 - GUI  
-  Implementasi: form tambah buku, daftar buku, tombol aksi (Pinjam/Kembali) dan styling.
+| Fungsi                      | Deskripsi                                                        |
+|-----------------------------|------------------------------------------------------------------|
+| `tambahBukuBaru()`          | Validasi input → tambahkan buku → refresh UI → catat log        |
+| `tampilkanBuku()`           | Render daftar buku ke DOM berdasarkan `inventarisBuku`           |
+| `pinjamBuku(id)`            | Set `dipinjam = true`, catat log, refresh UI                     |
+| `kembalikanBuku(id)`        | Set `dipinjam = false`, catat log, refresh UI                    |
+| `tambahLog(pesan, tipe)`    | Tambahkan entri ke panel log dengan timestamp                    |
+| `updateDebugView()`         | Tampilkan JSON state ke panel debug (J.620100.025.02)            |
+| `jalankanUjiUnit()`         | Jalankan 3 pengujian unit otomatis dan tulis hasil ke log        |
 
-- J.620100.016.01 - Validasi  
-  Implementasi: validasi input pada fungsi `tambahBukuBaru()` untuk mencegah input kosong.
+---
 
-- J.620100.017.02 - Render UI  
-  Implementasi: fungsi `tampilkanBuku()` yang merender DOM berdasarkan data `inventarisBuku`.
+## Cara Menjalankan
 
-- J.620100.023.02 - Logging  
-  Implementasi: panel log dan fungsi `tambahLog()` untuk mencatat aktivitas sistem.
+1. Simpan file HTML ke disk (`index.html`).
+2. Buka file di browser (double-click atau drag ke browser).
+3. Gunakan form **"Tambah Koleksi Buku"** untuk menambah data.
+4. Klik **"Uji Sistem"** untuk menjalankan pengujian unit.
+5. Klik **"Toggle Debug"** untuk memantau struktur data JSON secara langsung.
 
-- J.620100.033.02 - Pengujian Unit  
-  Implementasi: fungsi `jalankanUjiUnit()` melakukan dua uji sederhana (penambahan & pengembalian) dan menulis hasil ke panel log.
+---
 
-Lisensi
-- Bebas digunakan untuk belajar dan pengembangan. Cantumkan kredit bila digunakan kembali.
+## Penyesuaian Cepat
+
+- **Mengganti data awal:** edit variabel `inventarisBuku` di dalam `<script>`.
+- **Persistensi data:** integrasikan LocalStorage atau API backend.
+- **Menambahkan kolom baru:** tambah elemen input dan perluas objek buku.
+
+---
+
+## Catatan Pengembangan
+
+- Kode ditulis untuk **kejelasan pembelajaran**, bukan produksi.
+- Untuk produksi: pisahkan CSS/JS ke file terpisah, tambahkan build step, dan sanitasi input untuk mencegah XSS.
+
+---
+
+## Unit Kompetensi SKKNI
+
+**Skema:** Pemrogram Junior (Junior Coder) — **SKKNI No. 282 Tahun 2016**  
+**Judul Proyek:** Pengembangan Aplikasi Peminjaman Buku  
+**Bobot:** 10
+
+| Kode Unit           | Judul Unit Kompetensi                                                              | Bukti Implementasi                                                                              |
+|---------------------|------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| J.620100.004.02     | Menggunakan Struktur Data                                                          | Array `inventarisBuku` dengan operasi `push`, `find`, dan mutasi properti objek                 |
+| J.620100.009.01     | Menggunakan Spesifikasi Program                                                    | Panel spesifikasi (collapsible) memuat nama sistem, bahasa, platform, I/O, batasan, dan skema   |
+| J.620100.010.01     | Menerapkan Perintah Eksekusi Bahasa Pemrograman Berbasis Teks, Grafik, dan Multimedia | Form tambah buku, daftar inventaris, tombol aksi (Pinjam/Kembali), dan log aktivitas berbasis DOM |
+| J.620100.016.01     | Menulis Kode Dengan Prinsip Sesuai Guidelines dan Best Practices                   | Validasi input di `tambahBukuBaru()` mencegah data kosong; komentar dokumentasi JSDoc            |
+| J.620100.017.02     | Mengimplementasikan Pemrograman Terstruktur                                        | Fungsi `refreshUI()` dan `tampilkanBuku()` merender DOM secara terstruktur berdasarkan data      |
+| J.620100.023.02     | Membuat Dokumen Kode Program                                                       | Panel log `tambahLog()` mencatat semua aktivitas; komentar blok JSDoc pada setiap fungsi utama  |
+| J.620100.025.02     | Melakukan Debugging                                                                | Debug view `updateDebugView()` menampilkan JSON state; Toggle Debug untuk analisis real-time     |
+| J.620100.033.02     | Melaksanakan Pengujian Unit Program                                                | Fungsi `jalankanUjiUnit()` menjalankan 3 skenario uji dan mencatat hasil BERHASIL/GAGAL ke log  |
+
+---
+
+## Lisensi
+
+Bebas digunakan untuk pembelajaran dan pengembangan. Cantumkan kredit bila digunakan kembali.
